@@ -11,6 +11,7 @@ async function bootstrap() {
   }
   app.enableCors(options);
   app.setGlobalPrefix('api');
-  await app.listen(process.env.API_PORT || 3011);
+  await app.listen(process.env.API_PORT_DEV!);
+  // await app.listen(process.env.NODE_ENV == "development" ? process.env.API_PORT_DEV! : process.env.API_PORT_PROD!);
 }
 bootstrap();
