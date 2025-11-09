@@ -5,7 +5,7 @@ import "reflect-metadata";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const options = {
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "methods": "OPTIONS, GET,HEAD,PUT,PATCH,POST,DELETE",
     "allowedHeaders": "*",
     "allowOrigin": "any"
   }
