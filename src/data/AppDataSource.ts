@@ -21,11 +21,11 @@ const AppDataSource = new DataSource({
 
 // uncomment this and run the app to update migrations
 
-AppDataSource.initialize()
-    .then((result: DataSource) => {
-        // console.log(result)
-        // here you can start to work with your database
-    })
-    .catch((error) => console.log(error));
+// AppDataSource.initialize()
+//     .then((result: DataSource) => {
+//         // console.log(result)
+//         // here you can start to work with your database
+//     })
+//     .catch((error) => console.log(error));
 
 export default AppDataSource;

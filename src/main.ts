@@ -7,7 +7,7 @@ async function bootstrap() {
   const options = {
     "methods": "OPTIONS, GET,HEAD,PUT,PATCH,POST,DELETE",
     "allowedHeaders": "*",
-    "allowOrigin": "any"
+    // "allowOrigin": "any"
   }
   app.enableCors(options);
   app.setGlobalPrefix('api');
