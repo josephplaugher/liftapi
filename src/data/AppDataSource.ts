@@ -12,20 +12,18 @@ const AppDataSource = new DataSource({
     username: process.env.PG_USERNAME,
     password: process.env.PG_PASSWORD,
     database: process.env.PG_DATABASE,
-    synchronize: false, // run migrations to handle schema updates
+    // synchronize: false, // run migrations to handle schema updates ONLY IN DEV
     logging: false,
     entities: [Lift, LiftOption, User],
     subscribers: [],
     migrations: [],
 })
 
-// uncomment this and run the app to update migrations
-
-// AppDataSource.initialize()
-//     .then((result: DataSource) => {
-//         // console.log(result)
-//         // here you can start to work with your database
-//     })
-//     .catch((error) => console.log(error));
+AppDataSource.initialize()
+    .then((result: DataSource) => {
+        // console.log(result)
+        // here you can start to work with your database
+    })
+    .catch((error) => console.log(error));
 
 export default AppDataSource;

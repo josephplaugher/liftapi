@@ -6,14 +6,8 @@ export default class User {
     @PrimaryGeneratedColumn("uuid")
     Id: string;
 
-    @Column()
-    Name: string;
-
-    @Column()
-    Email: string;
-
-    @Column()
-    Password: string;
+    @Column({ unique: true, nullable: false })
+    Sub: string;
 }
 
 export class UserDto {

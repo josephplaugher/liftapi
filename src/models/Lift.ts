@@ -4,15 +4,18 @@ import { UUID } from "typeorm/driver/mongodb/bson.typings";
 @Entity()
 export default class Lift {
     @PrimaryGeneratedColumn("uuid")
-    Id?: string;
+    Id: string;
 
-    @Column()
+    @Column({ type: 'uuid', nullable: false })
+    UserId: string;
+
+    @Column({ nullable: false})
     Name: string;
 
     @Column()
     Weight: number;
 
-    @Column()
+    @Column({type: "timestamp", nullable: false})
     Date: string
 
     @Column()
