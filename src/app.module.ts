@@ -6,11 +6,12 @@ import LiftOptionController from './controllers/LiftOption.Controller';
 import AuthController from './controllers/Auth.Controller';
 import { AuthMiddleware } from './middleware/Auth';
 import { JwtStrategy } from './middleware/JwtStrategy';
+import UserIdService from './service/UserIdService';
 
 @Module({
   imports: [ConfigModule.forRoot()],
   controllers: [AuthController, LiftController, LiftOptionController],
-  providers: [EmailService, JwtStrategy],
+  providers: [EmailService, JwtStrategy, UserIdService],
   exports: [JwtStrategy],
 })
 export class AppModule { 

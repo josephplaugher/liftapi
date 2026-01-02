@@ -2,9 +2,7 @@ import { BadRequestException, Body, Controller, Get, Param, Post, Query, Req, Us
 import { CredentialRequest, GoogleAuth, OAuth2Client } from 'google-auth-library';
 import AppDataSource from 'src/data/AppDataSource';
 import { JwtAuthGuard } from 'src/middleware/JwtGuard';
-import { GoogleAuthDto } from 'src/models/GoogleAuthDto';
 import { Auth0JwtPayload } from 'src/models/JwtAuthPayload';
-import Lift from 'src/models/Lift';
 import User from 'src/models/User';
 
 @Controller('Auth')
