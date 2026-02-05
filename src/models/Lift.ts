@@ -15,7 +15,7 @@ export default class Lift {
     @Column()
     Weight: number;
 
-    @Column({type: "timestamp", nullable: false})
+    @Column({type: "timestamp", nullable: true})
     Date: string
 
     @Column()

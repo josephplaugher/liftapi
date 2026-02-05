@@ -9,7 +9,7 @@ import UserIdService from 'src/service/UserIdService';
 @Controller('Lift')
 export default class LiftController {
     constructor(private readonly userIdService: UserIdService) { }
-
+    
     @Get()
     async Get(@Req() req: { user: Auth0JwtPayload }) {
         const id = await this.userIdService.GetId(req.user.sub);

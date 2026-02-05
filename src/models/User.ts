@@ -8,6 +8,21 @@ export default class User {
 
     @Column({ unique: true, nullable: false })
     Sub: string;
+
+    @Column({ unique: true, nullable: true })
+    LastStripeSessionId: string;
+
+    @Column({ unique: true, nullable: true })
+    StripeCustomerId: string;
+
+    @Column({ unique: true, nullable: true })
+    StripeSubscriptionId: string;
+
+    @Column({ nullable: true })
+    StripeSubscriptionStatus: boolean;
+
+    @Column({ unique: true, nullable: true })
+    StripePriceId: string;
 }
 
 export class UserDto {

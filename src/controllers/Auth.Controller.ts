@@ -1,5 +1,4 @@
 import { BadRequestException, Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { CredentialRequest, GoogleAuth, OAuth2Client } from 'google-auth-library';
 import AppDataSource from 'src/data/AppDataSource';
 import { JwtAuthGuard } from 'src/middleware/JwtGuard';
 import { Auth0JwtPayload } from 'src/models/JwtAuthPayload';
