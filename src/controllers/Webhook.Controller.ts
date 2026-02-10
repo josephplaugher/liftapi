@@ -1,4 +1,3 @@
-// webhook.controller.ts
 import { Controller, Post, Headers, RawBodyRequest, Req, HttpCode } from '@nestjs/common';
 import { Request } from 'express';
 import AppDataSource from 'src/data/AppDataSource';
@@ -34,7 +33,7 @@ export class WebhookController {
                 webhookSecret,
             );
         } catch (err) {
-            console.log(`⚠️  Webhook signature verification failed.`, err.message);
+            console.log(`Webhook signature verification failed.`, err.message);
             throw new Error('Webhook signature verification failed');
         }
 
@@ -80,10 +79,10 @@ export class WebhookController {
     }
 
     private async handleCheckoutComplete(session: Stripe.Checkout.Session) {
-        const customerId = session.customer as string;
+        const StripeCustomerId = session.client_reference_id as string;
         const subscriptionId = session.subscription as string;
         const user = await AppDataSource.manager.findOne<User>(User, {
-            where: { StripeCustomerId: customerId }
+            where: { StripeCustomerId }
         });
         if (!user) throw new Error("cannot find user to update subscription status");
 

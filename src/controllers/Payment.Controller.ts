@@ -17,17 +17,13 @@ export default class PaymentController {
             if(!user) throw new BadRequestException;
 
             const session = await this.stripeService.createCheckoutSession({
-                priceId: "price_1SrL9PPXvt4RqC11noWLuTex",
+                priceId: "price_1SlvvoBXnHMHbjftxgkqhN0e",
                 auth0Sub: request.userId,
-                metadata: {
-                    auth0Id: request.userId, // auth0 sub
-                },
                 quantity: 1,
                 successUrl: `${process.env.CLIENT_URL}?payment=success&session_id={CHECKOUT_SESSION_ID}',`,
                 cancelUrl: `${process.env.CLIENT_URL}?payment=cancel`,
             });
 
-            user.LastStripeSessionId = session.id;
             await AppDataSource.manager.save(user);
 
             return { sessionId: session.id, url: session.url };
