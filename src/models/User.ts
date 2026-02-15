@@ -10,19 +10,25 @@ export default class User {
     Sub: string;
 
     @Column({ unique: true, nullable: true })
-    LastStripeSessionId: string;
-
-    @Column({ unique: true, nullable: true })
     StripeCustomerId: string;
 
     @Column({ unique: true, nullable: true })
     StripeSubscriptionId: string;
 
     @Column({ nullable: true })
-    StripeSubscriptionStatus: boolean;
+    StripePaymentStatus: string;
 
     @Column({ unique: true, nullable: true })
     StripePriceId: string;
+
+    @Column({ type: "timestamp", nullable: true })
+    StripeCurrentPeriodEnd: Date | null;
+
+    @Column({ nullable: true })
+    StripeCancelAtPeriodEnd: boolean;
+
+    @Column({ type: "timestamp", nullable: true })
+    StripeTrialEnd: Date | null
 }
 
 export class UserDto {

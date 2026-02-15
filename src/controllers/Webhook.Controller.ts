@@ -4,10 +4,6 @@ import AppDataSource from 'src/data/AppDataSource';
 import User from 'src/models/User';
 import Stripe from 'stripe';
 
-interface RequestWithRawBody extends Request {
-    rawBody: Buffer;
-}
-
 @Controller('webhook')
 export class WebhookController {
     private stripe: Stripe;
@@ -21,7 +17,6 @@ export class WebhookController {
     @Post()
     @HttpCode(200)
     async handleWebhook(@Headers('stripe-signature') signature: string, @Req() request: RawBodyRequest<Request>) {
-        console.log("stripe webhook is firing")
         const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
         let event: Stripe.Event;
 
@@ -33,26 +28,18 @@ export class WebhookController {
                 webhookSecret,
             );
         } catch (err) {
-            console.log(`Webhook signature verification failed.`, err.message);
             throw new Error('Webhook signature verification failed');
         }
 
-        // Handle the event
         switch (event.type) {
-            case 'customer.created':
-                const customer = event.data.object as Stripe.Customer;
-
-                await this.handleCustomerCreated(customer)
-                break;
             case 'checkout.session.completed':
                 const session = event.data.object as Stripe.Checkout.Session;
                 await this.handleCheckoutComplete(session);
                 break;
 
-            case 'charge.succeeded':
-            case 'invoice.paid':
-                const invoice = event.data.object as Stripe.Invoice;
-                await this.handleSubscriptionPaid(invoice);
+            case 'customer.subscription.updated':
+                const sub = event.data.object as Stripe.Subscription;
+                await this.handleSubscriptionUpdated(sub);
                 break;
 
             case 'customer.subscription.deleted':
@@ -66,38 +53,41 @@ export class WebhookController {
 
         return { received: true };
     }
-    
-    private async handleCustomerCreated(customer: Stripe.Customer) {
-        const customerId = customer.metadata.auth0Id;
-        const user = await AppDataSource.manager.findOne<User>(User, {
-            where: { Sub: customerId }
-        });
-        if (!user) throw new Error("cannot find user to update subscription status");
-
-        user.StripeSubscriptionId = customer.id;
-        await AppDataSource.manager.save(user);
-    }
 
     private async handleCheckoutComplete(session: Stripe.Checkout.Session) {
-        const StripeCustomerId = session.client_reference_id as string;
-        const subscriptionId = session.subscription as string;
         const user = await AppDataSource.manager.findOne<User>(User, {
-            where: { StripeCustomerId }
+            where: { Sub: session.client_reference_id?.toString() }
         });
+
         if (!user) throw new Error("cannot find user to update subscription status");
 
-        user.StripeSubscriptionId = subscriptionId;
+        const subscription = await this.stripe.subscriptions.retrieve(
+            session.subscription as string
+        );
+
+        user.StripeCustomerId = session.customer as string;
+        user.StripeSubscriptionId = session.subscription as string;
+        user.StripePaymentStatus = session.payment_status as string;
+        user.StripePriceId = subscription.items.data[0].price.id;
+        user.StripeTrialEnd = subscription.trial_end ? new Date(subscription.trial_end * 1000) : null;
+        // const sts: any = subscription; // sts = stupid typescript. have to trick it here
+        // user.StripeCurrentPeriodEnd = new Date(sts.current_period_end * 1000);
+        user.StripePaymentStatus = subscription.status;
+        user.StripeCancelAtPeriodEnd = subscription.cancel_at_period_end;
+
         await AppDataSource.manager.save(user);
     }
 
-    private async handleSubscriptionPaid(invoice: Stripe.Invoice) {
-        const customerId = invoice.customer as string;
+    private async handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         const user = await AppDataSource.manager.findOne<User>(User, {
-            where: { StripeCustomerId: customerId }
+            where: { StripeCustomerId: subscription.customer as string }
         });
-        if (!user) throw new Error("cannot find user to update payment status");
-
-        user.StripeSubscriptionStatus = true;
+        if (!user) throw new Error("cannot find user to update price");
+        user.StripeSubscriptionId = subscription.id as string;
+        user.StripePriceId = subscription.items.data[0].price.id.toString();
+        user.StripeTrialEnd = subscription.trial_end ? new Date(subscription.trial_end) : null;
+        // const sts: any = subscription; // sts = stupid typescript. have to trick it here
+        // user.StripeCurrentPeriodEnd = new Date(sts.current_period_end * 1000);
         await AppDataSource.manager.save(user);
     }
 
@@ -106,10 +96,12 @@ export class WebhookController {
         const user = await AppDataSource.manager.findOne<User>(User, {
             where: { StripeCustomerId: customerId }
         });
-        if (!user) throw new Error("cannot find user to update subscription status");
+        if (!user) throw new Error("cannot find user to delete");
 
-        user.StripeSubscriptionStatus = false;
         user.StripeSubscriptionId = "";
+        user.StripePriceId = "";
+        user.StripeTrialEnd = null;
+        user.StripeCurrentPeriodEnd = null;
         await AppDataSource.manager.save(user);
     }
 }
