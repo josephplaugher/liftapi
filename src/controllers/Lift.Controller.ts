@@ -3,12 +3,12 @@ import AppDataSource from 'src/data/AppDataSource';
 import { JwtAuthGuard } from 'src/middleware/JwtGuard';
 import { Auth0JwtPayload } from 'src/models/JwtAuthPayload';
 import Lift from 'src/models/Lift';
-import UserIdService from 'src/service/UserIdService';
+import UserService from 'src/service/UserService';
 
 @UseGuards(JwtAuthGuard)
 @Controller('Lift')
 export default class LiftController {
-    constructor(private readonly userIdService: UserIdService) { }
+    constructor(private readonly userIdService: UserService) { }
     
     @Get()
     async Get(@Req() req: { user: Auth0JwtPayload }) {

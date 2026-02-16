@@ -6,7 +6,7 @@ import LiftOptionController from './controllers/LiftOption.Controller';
 import AuthController from './controllers/Auth.Controller';
 import { AuthMiddleware } from './middleware/Auth';
 import { JwtStrategy } from './middleware/JwtStrategy';
-import UserIdService from './service/UserIdService';
+import UserService from './service/UserService';
 import PaymentController from './controllers/Payment.Controller';
 import { StripeService } from './service/StripeService';
 import HealthCheck from './controllers/HealthCheck.Controller';
@@ -18,7 +18,7 @@ import { json } from 'express';
 @Module({
   imports: [ConfigModule.forRoot()],
   controllers: [HealthCheck, AuthController, PaymentController, WebhookController, LiftController, LiftOptionController],
-  providers: [EmailService, JwtStrategy, UserIdService, StripeService],
+  providers: [EmailService, JwtStrategy, UserService, StripeService],
   exports: [JwtStrategy],
 })
 export class AppModule implements NestModule  { 
