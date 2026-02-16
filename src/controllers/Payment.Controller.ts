@@ -1,6 +1,5 @@
-import { BadRequestException, Body, Catch, Controller, Get, Post, Query, Req } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { StripeService } from '../service/StripeService';
-import { TCheckoutSessionDto } from 'src/models/CheckoutSessionDto';
 import AppDataSource from 'src/data/AppDataSource';
 import User from 'src/models/User';
 import UserService from 'src/service/UserService';
