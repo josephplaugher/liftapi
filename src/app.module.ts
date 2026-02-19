@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import EmailService from './service/EmailService';
 import LiftController from './controllers/Lift.Controller';
 import LiftOptionController from './controllers/LiftOption.Controller';
@@ -12,13 +12,14 @@ import { StripeService } from './service/StripeService';
 import HealthCheck from './controllers/HealthCheck.Controller';
 import { WebhookController } from './controllers/Webhook.Controller';
 import { json } from 'express';
-// import AppDataSource from './data/AppDataSource';
-// import { DbContext } from './data/DbContext';
+import PaymentService from './service/PaymentService';
+import AppDataSource from './data/AppDataSource';
+import LiftService from './service/LiftService';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [TypeOrmModule.forRoot(AppDataSource)],
   controllers: [HealthCheck, AuthController, PaymentController, WebhookController, LiftController, LiftOptionController],
-  providers: [EmailService, JwtStrategy, UserService, StripeService],
+  providers: [EmailService, JwtStrategy, UserService, PaymentService, StripeService, LiftService],
   exports: [JwtStrategy],
 })
 export class AppModule implements NestModule  { 

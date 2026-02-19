@@ -3,30 +3,20 @@ import { StripeService } from '../service/StripeService';
 import AppDataSource from 'src/data/AppDataSource';
 import User from 'src/models/User';
 import UserService from 'src/service/UserService';
+import PaymentService from 'src/service/PaymentService';
 
 @Controller('payment')
 export default class PaymentController {
-    constructor(private readonly stripeService: StripeService, private readonly userService: UserService) { }
+    constructor(
+        private readonly userService: UserService,
+        private readonly paymentService: PaymentService
+    ) { }
 
     @Post('session')
     async createSession(@Body() request: { userId: string }) {
         try {
-            const user = await AppDataSource.manager.findOne<User>(User, {
-                where: { Sub: request.userId }
-            });
-            if (!user) throw new BadRequestException;
-
-            const session = await this.stripeService.createCheckoutSession({
-                priceId: "price_1SlvvoBXnHMHbjftxgkqhN0e",
-                auth0Sub: request.userId,
-                quantity: 1,
-                successUrl: `${process.env.CLIENT_URL}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-                cancelUrl: `${process.env.CLIENT_URL}?payment=cancel`,
-            });
-
-            await AppDataSource.manager.save(user);
-
-            return { sessionId: session.id, url: session.url };
+            const session = await this.paymentService.checkoutSession(request.userId)
+            return session;
         } catch (error: any) {
             return new BadRequestException(error)
         }

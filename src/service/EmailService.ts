@@ -17,7 +17,7 @@ export default class EmailService {
         });
     }
 
-    async SendFreelancerNotifEmail(contact: any) {
+    async SendEmail(contact: any) {
         const mailOptions = {
             from: "joe@josephsoftwareservices.com",
             to: "josephplaugher@gmail.com",
