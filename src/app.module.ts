@@ -15,11 +15,12 @@ import { json } from 'express';
 import PaymentService from './service/PaymentService';
 import AppDataSource from './data/AppDataSource';
 import LiftService from './service/LiftService';
+import LiftOptionService from './service/LiftOptionService';
 
 @Module({
   imports: [TypeOrmModule.forRoot(AppDataSource)],
   controllers: [HealthCheck, AuthController, PaymentController, WebhookController, LiftController, LiftOptionController],
-  providers: [EmailService, JwtStrategy, UserService, PaymentService, StripeService, LiftService],
+  providers: [EmailService, JwtStrategy, UserService, PaymentService, StripeService, LiftService, LiftOptionService],
   exports: [JwtStrategy],
 })
 export class AppModule implements NestModule  { 
