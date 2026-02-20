@@ -10,9 +10,7 @@ export class StripeService {
     private readonly stripe: Stripe;
 
     constructor(@InjectDataSource() private readonly appDataSource: DataSource) {
-        this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-            apiVersion: '2025-12-15.clover',
-        });
+        this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
     }
 
     async createCheckoutSession(params: {
