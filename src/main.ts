@@ -22,7 +22,7 @@ async function bootstrap() {
   app.use('/webhook', raw({ type: 'application/json' }));
   app.enableCors(options);
   app.setGlobalPrefix('api');
-  const port = process.env.API_PORT_DEV!;
+  const port = process.env.API_PORT_PROD!;
   await app.listen(port);
   console.log(`app listening on port ${port}`)
 }
