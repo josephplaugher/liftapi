@@ -18,7 +18,7 @@ export default class User {
     @Column({ nullable: true })
     StripePaymentStatus: string;
 
-    @Column({ unique: true, nullable: true })
+    @Column({ nullable: true })
     StripePriceId: string;
 
     @Column({ type: "timestamp", nullable: true })

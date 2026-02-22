@@ -17,5 +17,4 @@ export class WebhookController {
     async handleWebhook(@Headers('stripe-signature') signature: string, @Req() request: RawBodyRequest<Request>) {
         const r = await this.stripeService.handleWebhook(signature, request)
     }
-
 }
