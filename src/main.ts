@@ -20,6 +20,6 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   const port = process.env.NODE_ENV == "production" ? process.env.API_PORT_PROD! : process.env.API_PORT_DEV!;
   await app.listen(port);
-  console.log(`app listening on port ${port}`)
+  console.log(`app running in ${process.env.NODE_ENV} listening on port ${port}`)
 }
 bootstrap();
