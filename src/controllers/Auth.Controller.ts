@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/middleware/JwtGuard';
 import { Auth0JwtPayload } from 'src/models/JwtAuthPayload';
 import UserService from 'src/service/UserService';
@@ -9,9 +9,20 @@ export default class AuthController {
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    async getProtected(@Req() req: { user: Auth0JwtPayload }) {
+    async retrieveUser(@Req() req: { user: Auth0JwtPayload }) {
         try {
-            await this.userService.getOrCreateAuthorizedUser(req.user.sub);
+            await this.userService.getAuthorizedUser(req.user.sub);
+            return "ok";
+        } catch (error: any) {
+            return new BadRequestException(error)
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post()
+    async addNewUser(@Req() req: { user: Auth0JwtPayload }) {
+        try {
+            await this.userService.createNewUser(req.user.sub);
             return "ok";
         } catch (error: any) {
             return new BadRequestException(error)

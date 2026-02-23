@@ -12,8 +12,9 @@ export default class PaymentService {
         const user = await this.appDataSource.manager.findOne<User>(User, {
             where: { Sub: userId }
         });
-        if (!user) throw new BadRequestException;
-
+        if (!user) {
+            throw new Error(`can't find user by Sub ${userId} to complete payment session`);
+        }
         const session = await this.stripeService.createCheckoutSession({
             priceId: "price_1SlvvoBXnHMHbjftxgkqhN0e",
             auth0Sub: userId,

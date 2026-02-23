@@ -1,5 +1,6 @@
-import { Injectable, Req } from "@nestjs/common";
+import { BadRequestException, Injectable, Req } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
+import { error } from "console";
 import { Auth0JwtPayload } from "src/models/JwtAuthPayload";
 import User from "src/models/User";
 import { DataSource } from "typeorm";
@@ -8,28 +9,39 @@ import { DataSource } from "typeorm";
 export default class UserService {
     constructor(@InjectDataSource() private readonly appDataSource: DataSource) { }
 
-    async getOrCreateAuthorizedUser(sub: string) {
+    async getAuthorizedUser(sub: string) {
         const userExists = await this.appDataSource.manager.findOne<User>(User, {
             where: { Sub: sub }
         });
         if (!userExists) {
-            const user = this.appDataSource.manager.create(User, { Sub: sub });
-            await this.appDataSource.manager.save(user);
+            throw new Error(`can't find user by Sub ${sub}`);
         }
         return "ok";
     }
 
-    async GetId(userSub: string) {
-        const result = await this.appDataSource.manager.findOne(User, {
-            where: { Sub: userSub }
+    async createNewUser(sub: string) {
+        const user = this.appDataSource.manager.create(User, { Sub: sub });
+        await this.appDataSource.manager.save(user);
+        return "ok";
+    }
+
+    async GetId(sub: string) {
+        const user = await this.appDataSource.manager.findOne(User, {
+            where: { Sub: sub }
         });
-        return result?.Id;
+        if(!user) {
+            throw new Error(`can't find user ID by Sub ${sub}`);
+        }
+        return user?.Id;
     }
 
     async verifyPaymentStatus(sub: string) {
         const user = await this.appDataSource.manager.findOne<User>(User, {
             where: { Sub: sub }
         });
-        return user?.StripePaymentStatus;
+        if(!user) {
+            throw new Error(`can't find user by Sub ${sub}`);
+        }
+        return user.StripePaymentStatus;
     }
 }
