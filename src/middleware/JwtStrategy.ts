@@ -1,6 +1,6 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import * as jwksRsa from 'jwks-rsa';
 
@@ -22,7 +22,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  handleRequest<TUser = any>(err: Error | null, user: TUser | false, info: JsonWebTokenError | TokenExpiredError | null): TUser {
+  handleRequest<TUser = any>(err: Error | null, user: TUser | false, info: JsonWebTokenError | TokenExpiredError | null, context: ExecutionContext): TUser {
+    const request = context.switchToHttp().getRequest();
+    console.log('Auth header:', request.headers.authorization);
+    console.log('=== JWT DEBUG ===');
+    console.log('err:', err);
+    console.log('user:', user);
+    console.log('info:', info);
+
     if (info instanceof TokenExpiredError) {
       throw new UnauthorizedException('Token expired');
     }
