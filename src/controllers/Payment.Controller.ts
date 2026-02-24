@@ -18,6 +18,7 @@ export default class PaymentController {
             const session = await this.paymentService.checkoutSession(request.userId)
             return session;
         } catch (error: any) {
+            console.log(Error);
             return new BadRequestException(error)
         }
     }
@@ -28,6 +29,7 @@ export default class PaymentController {
             const status = await this.userService.verifyPaymentStatus(sub);
             return { status };
         } catch (Error: any) {
+            console.log(Error);
             return BadRequestException;
         }
     }

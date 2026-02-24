@@ -43,35 +43,31 @@ export class StripeService {
         const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
         let event: Stripe.Event;
 
-        try {
-            const payload = request.rawBody as unknown as Buffer
-            event = this.stripe.webhooks.constructEvent(
-                payload,
-                signature,
-                webhookSecret,
-            );
+        const payload = request.rawBody as unknown as Buffer
+        event = this.stripe.webhooks.constructEvent(
+            payload,
+            signature,
+            webhookSecret,
+        );
 
-            switch (event.type) {
-                case 'checkout.session.completed':
-                    const session = event.data.object as Stripe.Checkout.Session;
-                    await this.handleCheckoutComplete(session);
-                    break;
+        switch (event.type) {
+            case 'checkout.session.completed':
+                const session = event.data.object as Stripe.Checkout.Session;
+                await this.handleCheckoutComplete(session);
+                break;
 
-                case 'customer.subscription.updated':
-                    const sub = event.data.object as Stripe.Subscription;
-                    await this.handleSubscriptionUpdated(sub);
-                    break;
+            case 'customer.subscription.updated':
+                const sub = event.data.object as Stripe.Subscription;
+                await this.handleSubscriptionUpdated(sub);
+                break;
 
-                case 'customer.subscription.deleted':
-                    const subscription = event.data.object as Stripe.Subscription;
-                    await this.handleSubscriptionDeleted(subscription);
-                    break;
+            case 'customer.subscription.deleted':
+                const subscription = event.data.object as Stripe.Subscription;
+                await this.handleSubscriptionDeleted(subscription);
+                break;
 
-                default:
-                    console.log(`Unhandled event type ${event.type}`);
-            }
-        } catch (err) {
-            throw new Error(err);
+            default:
+                console.log(`Unhandled event type ${event.type}`);
         }
 
         return { received: true };

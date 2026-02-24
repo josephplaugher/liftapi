@@ -17,6 +17,7 @@ export default class LiftController {
             const lifts = await this.liftService.getLifts(req.user.sub);
             return lifts;
         } catch (error: any) {
+            console.log(error);
             return new BadRequestException(error)
         }
     }
@@ -27,6 +28,7 @@ export default class LiftController {
             const lifts = await this.liftService.getByName(name, req.user.sub);
             return lifts;
         } catch (error: any) {
+            console.log(error);
             return new BadRequestException(error)
         }
     }
@@ -37,6 +39,7 @@ export default class LiftController {
             await this.liftService.AddSet(lift, req.user.sub);
             return "ok";
         } catch (error: any) {
+            console.log(error);
             return new BadRequestException(error)
         }
     }

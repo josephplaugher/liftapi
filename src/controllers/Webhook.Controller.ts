@@ -15,6 +15,10 @@ export class WebhookController {
     @Post()
     @HttpCode(200)
     async handleWebhook(@Headers('stripe-signature') signature: string, @Req() request: RawBodyRequest<Request>) {
-        const r = await this.stripeService.handleWebhook(signature, request)
+        try {
+            const r = await this.stripeService.handleWebhook(signature, request)
+        } catch (err) {
+            console.log(err);
+        }
     }
 }

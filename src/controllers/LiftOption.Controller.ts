@@ -15,6 +15,7 @@ export default class LiftOptionController {
             const liftOptions: LiftOption[] = await this.liftOptionService.Get(req.user.sub);
             return liftOptions;
         } catch (error: any) {
+            console.log(error);
             return new BadRequestException(error)
         }
     }
@@ -37,6 +38,7 @@ export default class LiftOptionController {
             await this.liftOptionService.Post(liftOption, req.user.sub);
             return "ok";
         } catch (error: any) {
+            console.log(error);
             return new BadRequestException(error)
         }
     }

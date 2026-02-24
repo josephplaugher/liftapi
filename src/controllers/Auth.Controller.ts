@@ -14,6 +14,7 @@ export default class AuthController {
             await this.userService.getAuthorizedUser(req.user.sub);
             return "ok";
         } catch (error: any) {
+            console.log(error);
             return new BadRequestException(error)
         }
     }
@@ -25,6 +26,7 @@ export default class AuthController {
             await this.userService.createNewUser(req.user.sub);
             return "ok";
         } catch (error: any) {
+            console.log(error);
             return new BadRequestException(error)
         }
     }
