@@ -19,7 +19,7 @@ export default class PaymentController {
             return session;
         } catch (error: any) {
             console.log(Error);
-            return new BadRequestException(error)
+            return new BadRequestException(`error creating checkout session : ${request}`)
         }
     }
 
@@ -30,7 +30,7 @@ export default class PaymentController {
             return { status };
         } catch (Error: any) {
             console.log(Error);
-            return BadRequestException;
+            return new BadRequestException("could not verify payment status");
         }
     }
 }

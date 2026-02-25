@@ -29,7 +29,7 @@ export default class LiftController {
             return lifts;
         } catch (error: any) {
             console.log(error);
-            return new BadRequestException(error)
+            return new BadRequestException(`could not find a lift by name ${name}`)
         }
     }
 
@@ -40,7 +40,7 @@ export default class LiftController {
             return "ok";
         } catch (error: any) {
             console.log(error);
-            return new BadRequestException(error)
+            return new BadRequestException(`could not add that set ${lift}`)
         }
     }
 }

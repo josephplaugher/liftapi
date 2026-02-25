@@ -15,7 +15,7 @@ export default class AuthController {
             return "ok";
         } catch (error: any) {
             console.log(error);
-            return new BadRequestException(error)
+            return new BadRequestException("could not find that user")
         }
     }
 
@@ -27,7 +27,7 @@ export default class AuthController {
             return "ok";
         } catch (error: any) {
             console.log(error);
-            return new BadRequestException(error)
+            return new BadRequestException("could not create a new user")
         }
     }
 }

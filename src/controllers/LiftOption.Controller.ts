@@ -16,21 +16,9 @@ export default class LiftOptionController {
             return liftOptions;
         } catch (error: any) {
             console.log(error);
-            return new BadRequestException(error)
+            return new BadRequestException("could not get lift options")
         }
     }
-
-    // @Get()
-    // async GetById(optionId: string, @Req() req: { user: Auth0JwtPayload }) {
-    //     const userId = await this.userIdService.GetId(req.user.sub);
-    //     if (!userId) throw new Error("User not found");
-
-    //     const liftOption = await AppDataSource.manager.find<LiftOption>(LiftOption, {
-    //         where: { Id: optionId, UserId: userId },
-    //     });
-    //     if (liftOption == null) { return new BadRequestException("lift option not found") }
-    //     return liftOption;
-    // }
 
     @Post()
     async Post(@Body() liftOption: LiftOption, @Req() req: { user: Auth0JwtPayload }) {
@@ -39,7 +27,7 @@ export default class LiftOptionController {
             return "ok";
         } catch (error: any) {
             console.log(error);
-            return new BadRequestException(error)
+            return new BadRequestException(`could not create new lift option ${liftOption}`)
         }
     }
 }
