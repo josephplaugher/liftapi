@@ -32,6 +32,8 @@ export class StripeService {
                     quantity: params.quantity ?? 1,
                 },
             ],
+            payment_method_collection: 'if_required',
+            allow_promotion_codes: true,
             success_url: params.successUrl,
             cancel_url: params.cancelUrl,
             customer_email: params.customerEmail,
