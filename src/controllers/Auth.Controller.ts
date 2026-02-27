@@ -11,23 +11,11 @@ export default class AuthController {
     @Get()
     async retrieveUser(@Req() req: { user: Auth0JwtPayload }) {
         try {
-            await this.userService.getAuthorizedUser(req.user.sub);
+            await this.userService.getOrCreateUser(req.user.sub);
             return "ok";
         } catch (error: any) {
             console.log(error);
             return new BadRequestException("could not find that user")
-        }
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Post()
-    async addNewUser(@Req() req: { user: Auth0JwtPayload }) {
-        try {
-            await this.userService.createNewUser(req.user.sub);
-            return "ok";
-        } catch (error: any) {
-            console.log(error);
-            return new BadRequestException("could not create a new user")
         }
     }
 }

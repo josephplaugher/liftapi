@@ -9,19 +9,14 @@ import { DataSource } from "typeorm";
 export default class UserService {
     constructor(@InjectDataSource() private readonly appDataSource: DataSource) { }
 
-    async getAuthorizedUser(sub: string) {
+    async getOrCreateUser(sub: string) {
         const userExists = await this.appDataSource.manager.findOne<User>(User, {
             where: { Sub: sub }
         });
         if (!userExists) {
-            throw new Error(`can't find user by Sub ${sub}`);
+            const user = await this.appDataSource.manager.create(User, { Sub: sub });
+            await this.appDataSource.manager.save(user);
         }
-        return "ok";
-    }
-
-    async createNewUser(sub: string) {
-        const user = this.appDataSource.manager.create(User, { Sub: sub });
-        await this.appDataSource.manager.save(user);
         return "ok";
     }
 
@@ -29,7 +24,7 @@ export default class UserService {
         const user = await this.appDataSource.manager.findOne(User, {
             where: { Sub: sub }
         });
-        if(!user) {
+        if (!user) {
             throw new Error(`can't find user ID by Sub ${sub}`);
         }
         return user?.Id;
@@ -39,8 +34,8 @@ export default class UserService {
         const user = await this.appDataSource.manager.findOne<User>(User, {
             where: { Sub: sub }
         });
-        if(!user) {
-            throw new Error(`can't find user by Sub ${sub}`);
+        if (!user) {
+            return null;
         }
         return user.StripePaymentStatus;
     }
