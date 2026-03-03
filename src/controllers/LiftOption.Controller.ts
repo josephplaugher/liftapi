@@ -30,4 +30,25 @@ export default class LiftOptionController {
             return new BadRequestException(`could not create new lift option ${liftOption}`)
         }
     }
+    @Post('patch')
+    async Patch(@Body() liftOption: LiftOption, @Req() req: { user: Auth0JwtPayload }) {
+        try {
+            await this.liftOptionService.Patch(liftOption, req.user.sub);
+            return "ok";
+        } catch (error: any) {
+            console.log(error);
+            return new BadRequestException(`could not update lift option ${liftOption?.Id}`)
+        }
+    }
+
+    @Post('delete')
+    async Delete(@Body('Id') liftOptionId: string, @Req() req: { user: Auth0JwtPayload }) {
+        try {
+            await this.liftOptionService.Delete(liftOptionId, req.user.sub);
+            return "ok";
+        } catch (error: any) {
+            console.log(error);
+            return new BadRequestException(`could not delete lift option ${liftOptionId}`)
+        }
+    }
 }

@@ -1,10 +1,8 @@
-import { BadRequestException, Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
-import AppDataSource from 'src/data/AppDataSource';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/middleware/JwtGuard';
 import { Auth0JwtPayload } from 'src/models/JwtAuthPayload';
 import Lift from 'src/models/Lift';
 import LiftService from 'src/service/LiftService';
-import UserService from 'src/service/UserService';
 
 @UseGuards(JwtAuthGuard)
 @Controller('Lift')
@@ -41,6 +39,28 @@ export default class LiftController {
         } catch (error: any) {
             console.log(error);
             return new BadRequestException(`could not add that set ${lift}`)
+        }
+    }
+
+    @Patch()
+    async Patch(@Body() lift: Lift, @Req() req: { user: Auth0JwtPayload }) {
+        try {
+            await this.liftService.UpdateSet(lift, req.user.sub);
+            return "ok";
+        } catch (error: any) {
+            console.log(error);
+            return new BadRequestException(`could not update lift ${lift?.Id}`);
+        }
+    }
+
+    @Delete()
+    async Delete(@Body('Id') liftId: string, @Req() req: { user: Auth0JwtPayload }) {
+        try {
+            await this.liftService.DeleteSet(liftId, req.user.sub);
+            return "ok";
+        } catch (error: any) {
+            console.log(error);
+            return new BadRequestException(`could not delete lift ${liftId}`);
         }
     }
 }

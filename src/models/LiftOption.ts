@@ -10,4 +10,7 @@ export default class LiftOption {
 
     @Column()
     Name: string;
+
+    @Column()
+    IsBarbellLift: boolean;
 }
