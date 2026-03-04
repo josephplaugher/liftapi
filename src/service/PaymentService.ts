@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import User from "src/models/User";
 import { StripeService } from "./StripeService";
-import { InjectDataSource } from "@nestjs/typeorm";
+import { InjectDataSource } from "@nestjs/typeorm/dist/common";
 import { DataSource } from "typeorm";
 
 @Injectable()

@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, Req } from "@nestjs/common";
-import { InjectDataSource } from "@nestjs/typeorm";
+import { InjectDataSource } from "@nestjs/typeorm/dist/common";
 import { error } from "console";
 import { Auth0JwtPayload } from "src/models/JwtAuthPayload";
 import User from "src/models/User";

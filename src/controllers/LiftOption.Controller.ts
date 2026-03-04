@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/middleware/JwtGuard';
 import { Auth0JwtPayload } from 'src/models/JwtAuthPayload';
 import LiftOption from 'src/models/LiftOption';
@@ -30,7 +30,8 @@ export default class LiftOptionController {
             return new BadRequestException(`could not create new lift option ${liftOption}`)
         }
     }
-    @Post('patch')
+
+    @Patch()
     async Patch(@Body() liftOption: LiftOption, @Req() req: { user: Auth0JwtPayload }) {
         try {
             await this.liftOptionService.Patch(liftOption, req.user.sub);
@@ -41,14 +42,14 @@ export default class LiftOptionController {
         }
     }
 
-    @Post('delete')
-    async Delete(@Body('Id') liftOptionId: string, @Req() req: { user: Auth0JwtPayload }) {
+    @Delete()
+    async Delete(@Body() body: {id: string}, @Req() req: { user: Auth0JwtPayload }) {
         try {
-            await this.liftOptionService.Delete(liftOptionId, req.user.sub);
+            await this.liftOptionService.Delete(body.id, req.user.sub);
             return "ok";
         } catch (error: any) {
             console.log(error);
-            return new BadRequestException(`could not delete lift option ${liftOptionId}`)
+            return new BadRequestException(`could not delete lift option ${body.id}`)
         }
     }
 }

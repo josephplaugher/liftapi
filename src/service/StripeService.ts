@@ -2,7 +2,7 @@ import { Injectable, RawBodyRequest, Req } from '@nestjs/common';
 import Stripe from 'stripe';
 import { Request } from 'express';
 import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { InjectDataSource } from '@nestjs/typeorm/dist/common';
 import User from 'src/models/User';
 
 @Injectable()
