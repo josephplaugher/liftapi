@@ -48,10 +48,10 @@ export default class LiftOptionService {
         });
         if(liftOptionToUpdate == null) throw new Error("could not find lift option to update");
 
-        liftOptionToUpdate.Name = liftOption.Name;
         liftOptionToUpdate.IsBarbellLift = liftOption.IsBarbellLift;
+        liftOptionToUpdate.Name = liftOption.Name;
 
-        await this.appDataSource.manager.save(liftOptionToUpdate);
+        await this.appDataSource.manager.save(LiftOption, liftOptionToUpdate)
         
         return "ok";
     }
@@ -67,9 +67,6 @@ export default class LiftOptionService {
             where: { UserId: userId, Id: liftOptionId },
         });
         if (liftOptionToDelete == null) throw new Error("could not find lift option to delete");
-
-        // Delete all recorded Lifts under this lift option
-        await this.appDataSource.manager.delete('Lift', { Name: liftOptionToDelete.Name, UserId: userId });
 
         await this.appDataSource.manager.remove(liftOptionToDelete);
 
