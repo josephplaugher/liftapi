@@ -87,7 +87,7 @@ export default class LiftService {
         if (!userId) throw new Error("User not found");
 
         const liftToDelete: Lift | null = await this.appDataSource.manager.findOne(Lift, {
-            where: { UserId: userId, Id: liftId },
+            where: { UserId: userId, Id: liftId }, order: { Date: 'desc'},
         });
 
         if (!liftToDelete) {

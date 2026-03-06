@@ -15,7 +15,7 @@ export default class LiftOptionService {
         if (!id) throw new Error("User not found");
 
         const liftOptions: LiftOption[] = await this.appDataSource.manager.find(LiftOption, {
-            where: { UserId: id },
+            where: { UserId: id }, order: { Name: 'asc'}
         });
 
         return liftOptions;
@@ -64,7 +64,7 @@ export default class LiftOptionService {
         if (!userId) throw new Error("User not found");
 
         const liftOptionToDelete: LiftOption | null = await this.appDataSource.manager.findOne(LiftOption, {
-            where: { UserId: userId, Id: liftOptionId },
+            where: { UserId: userId, Id: liftOptionId }
         });
         if (liftOptionToDelete == null) throw new Error("could not find lift option to delete");
 
