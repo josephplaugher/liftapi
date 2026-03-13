@@ -43,13 +43,13 @@ export default class LiftOptionController {
     }
 
     @Delete()
-    async Delete(@Body() body: {id: string}, @Req() req: { user: Auth0JwtPayload }) {
+    async Delete(@Body() body: {Id: string}, @Req() req: { user: Auth0JwtPayload }) {
         try {
-            await this.liftOptionService.Delete(body.id, req.user.sub);
+            await this.liftOptionService.Delete(body.Id, req.user.sub);
             return "ok";
         } catch (error: any) {
             console.log(error);
-            return new BadRequestException(`could not delete lift option ${body.id}`)
+            return new BadRequestException(`could not delete lift option ${body.Id}`)
         }
     }
 }
