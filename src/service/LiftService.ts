@@ -2,9 +2,10 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import User from "src/models/User";
 import { StripeService } from "./StripeService";
 import { InjectDataSource } from "@nestjs/typeorm/dist/common";
-import { DataSource } from "typeorm";
+import { Between, DataSource } from "typeorm";
 import UserService from "./UserService";
-import Lift from "src/models/Lift";
+import Lift, { LiftGraphable } from "src/models/Lift";
+import { groupBy } from "rxjs";
 
 @Injectable()
 export default class LiftService {
@@ -35,6 +36,28 @@ export default class LiftService {
             },
         });
         return lift;
+    }
+
+    async getByGroupedHistory(sub: string, liftName: string, startDate: string, endDate: string) {
+        const id = await this.userService.GetId(sub);
+        if (!id) throw new Error("User not found");
+
+        const lifts = await this.appDataSource.manager.find(Lift, {
+            where: {
+                UserId: id,
+                Name: liftName,
+                Date: Between(new Date(startDate).toISOString(),
+                    new Date(endDate).toISOString())
+            },
+            order: { Date: 'ASC' },
+        });
+
+        const results = lifts.map(lift => ({
+            Date: new Date(lift.Date).toISOString().split('T')[0],
+            Load: lift.Weight * (lift.Set1 + (lift.Set2 ?? 0) + (lift.Set3 ?? 0) + (lift.Set4 ?? 0) + (lift.Set5 ?? 0))
+          }));
+
+        return results;
     }
 
     async AddSet(lift: Lift, sub: string) {
@@ -87,7 +110,7 @@ export default class LiftService {
         if (!userId) throw new Error("User not found");
 
         const liftToDelete: Lift | null = await this.appDataSource.manager.findOne(Lift, {
-            where: { UserId: userId, Id: liftId }, order: { Date: 'desc'},
+            where: { UserId: userId, Id: liftId }, order: { Date: 'desc' },
         });
 
         if (!liftToDelete) {

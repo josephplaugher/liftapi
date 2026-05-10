@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/middleware/JwtGuard';
 import { Auth0JwtPayload } from 'src/models/JwtAuthPayload';
 import Lift from 'src/models/Lift';
@@ -17,6 +17,17 @@ export default class LiftController {
         } catch (error: any) {
             console.log(error);
             return new BadRequestException(error)
+        }
+    }
+    
+    @Get('history/grouped')
+    async GetByGroupedHistory(@Query('name') name: string, @Query('startDate') startDate: string, @Query('endDate') endDate: string, @Req() req: { user: Auth0JwtPayload }) {
+        try {
+            const lifts = await this.liftService.getByGroupedHistory(req.user.sub, name, startDate, endDate);
+            return lifts;
+        } catch (error: any) {
+            console.log(error);
+            return new BadRequestException(`something went wrong getting the history for ${name}`)
         }
     }
 

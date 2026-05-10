@@ -33,3 +33,8 @@ export default class Lift {
     @Column()
     Set5?: number;
 }
+
+export class LiftGraphable {
+    Date: string;
+    Load: number;
+}
