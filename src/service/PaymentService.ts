@@ -16,7 +16,7 @@ export default class PaymentService {
             throw new Error(`can't find user by Sub ${userId} to complete payment session`);
         }
         const session = await this.stripeService.createCheckoutSession({
-            priceId: "price_1SlvvoBXnHMHbjftxgkqhN0e",
+            priceId: process.env.PRICE_ID!,
             auth0Sub: userId,
             quantity: 1,
             successUrl: `${process.env.CLIENT_URL}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
