@@ -16,6 +16,9 @@ export default class User {
     StripeSubscriptionId: string;
 
     @Column({ nullable: true })
+    StripeSubscriptionStatus: string;
+
+    @Column({ nullable: true })
     StripePaymentStatus: string;
 
     @Column({ nullable: true })

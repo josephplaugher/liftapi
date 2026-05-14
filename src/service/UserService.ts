@@ -44,6 +44,6 @@ export default class UserService {
         if (!user) {
             return null;
         }
-        return user.StripePaymentStatus;
+        return user.StripeSubscriptionStatus;
     }
 }

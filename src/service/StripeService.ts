@@ -91,7 +91,7 @@ export class StripeService {
         user.StripePaymentStatus = session.payment_status as string;
         user.StripePriceId = subscription.items.data[0].price.id;
         user.StripeTrialEnd = subscription.trial_end ? new Date(subscription.trial_end * 1000) : null;
-        user.StripePaymentStatus = subscription.status;
+        user.StripeSubscriptionStatus = subscription.status;
         user.StripeCancelAtPeriodEnd = subscription.cancel_at_period_end;
         await this.appDataSource.manager.save(user);
     }
