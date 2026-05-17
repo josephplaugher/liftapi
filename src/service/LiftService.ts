@@ -54,7 +54,8 @@ export default class LiftService {
 
         const results = lifts.map(lift => ({
             Date: new Date(lift.Date).toISOString().split('T')[0],
-            Load: lift.Weight * (lift.Set1 + (lift.Set2 ?? 0) + (lift.Set3 ?? 0) + (lift.Set4 ?? 0) + (lift.Set5 ?? 0))
+            Load: lift.Weight * (lift.Set1 + (lift.Set2 ?? 0) + (lift.Set3 ?? 0) + (lift.Set4 ?? 0) + (lift.Set5 ?? 0)),
+            Lift: lift
           }));
 
         return results;

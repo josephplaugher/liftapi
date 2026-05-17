@@ -37,4 +37,5 @@ export default class Lift {
 export class LiftGraphable {
     Date: string;
     Load: number;
+    Lift: Lift;
 }
