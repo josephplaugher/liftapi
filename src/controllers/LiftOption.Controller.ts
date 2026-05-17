@@ -3,6 +3,7 @@ import { JwtAuthGuard } from 'src/middleware/JwtGuard';
 import { Auth0JwtPayload } from 'src/models/JwtAuthPayload';
 import LiftOption from 'src/models/LiftOption';
 import LiftOptionService from 'src/service/LiftOptionService';
+import * as Sentry from "@sentry/nestjs"
 
 @UseGuards(JwtAuthGuard)
 @Controller('LiftOption')
@@ -15,7 +16,7 @@ export default class LiftOptionController {
             const liftOptions: LiftOption[] = await this.liftOptionService.Get(req.user.sub);
             return liftOptions;
         } catch (error: any) {
-            console.log(error);
+            Sentry.captureException(error, { user: req.user });
             return new BadRequestException("could not get lift options")
         }
     }
@@ -26,7 +27,7 @@ export default class LiftOptionController {
             await this.liftOptionService.Post(liftOption, req.user.sub);
             return "ok";
         } catch (error: any) {
-            console.log(error);
+            Sentry.captureException(error, { user: req.user });
             return new BadRequestException(`could not create new lift option ${liftOption}`)
         }
     }
@@ -37,7 +38,7 @@ export default class LiftOptionController {
             await this.liftOptionService.Patch(liftOption, req.user.sub);
             return "ok";
         } catch (error: any) {
-            console.log(error);
+            Sentry.captureException(error, { user: req.user});
             return new BadRequestException(`could not update lift option ${liftOption?.Id}`)
         }
     }
@@ -48,7 +49,7 @@ export default class LiftOptionController {
             await this.liftOptionService.Delete(body.Id, req.user.sub);
             return "ok";
         } catch (error: any) {
-            console.log(error);
+            Sentry.captureException(error, { user: req.user });
             return new BadRequestException(`could not delete lift option ${body.Id}`)
         }
     }

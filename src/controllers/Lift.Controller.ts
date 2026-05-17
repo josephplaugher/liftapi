@@ -3,6 +3,7 @@ import { JwtAuthGuard } from 'src/middleware/JwtGuard';
 import { Auth0JwtPayload } from 'src/models/JwtAuthPayload';
 import Lift from 'src/models/Lift';
 import LiftService from 'src/service/LiftService';
+import * as Sentry from "@sentry/nestjs"
 
 @UseGuards(JwtAuthGuard)
 @Controller('Lift')
@@ -15,7 +16,7 @@ export default class LiftController {
             const lifts = await this.liftService.getLifts(req.user.sub);
             return lifts;
         } catch (error: any) {
-            console.log(error);
+            Sentry.captureException(error, { user: req.user });
             return new BadRequestException(error)
         }
     }

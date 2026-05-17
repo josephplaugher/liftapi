@@ -2,6 +2,7 @@ import { BadRequestException, Controller, Get, Post, Req, UseGuards } from '@nes
 import { JwtAuthGuard } from 'src/middleware/JwtGuard';
 import { Auth0JwtPayload } from 'src/models/JwtAuthPayload';
 import UserService from 'src/service/UserService';
+import * as Sentry from "@sentry/nestjs"
 
 @Controller('Auth')
 export default class AuthController {
@@ -14,7 +15,7 @@ export default class AuthController {
             await this.userService.getOrCreateUser(req.user.sub);
             return "ok";
         } catch (error: any) {
-            console.log(error);
+            Sentry.captureException(error, { user: req.user });
             return new BadRequestException("could not find that user")
         }
     }

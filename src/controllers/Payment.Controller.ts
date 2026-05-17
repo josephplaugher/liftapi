@@ -4,6 +4,7 @@ import AppDataSource from 'src/data/AppDataSource';
 import User from 'src/models/User';
 import UserService from 'src/service/UserService';
 import PaymentService from 'src/service/PaymentService';
+import * as Sentry from "@sentry/nestjs"
 
 @Controller('payment')
 export default class PaymentController {
@@ -18,7 +19,7 @@ export default class PaymentController {
             const session = await this.paymentService.checkoutSession(request.userId)
             return session;
         } catch (error: any) {
-            console.log(Error);
+            Sentry.captureException(error, { user: { sub: request.userId } });
             return new BadRequestException(`error creating checkout session : ${request}`)
         }
     }
@@ -29,7 +30,7 @@ export default class PaymentController {
             const status = await this.userService.verifyPaymentStatus(sub);
             return { status };
         } catch (Error: any) {
-            console.log(Error);
+            Sentry.captureException(Error, { user: { sub: sub } });
             return new BadRequestException("could not verify payment status");
         }
     }

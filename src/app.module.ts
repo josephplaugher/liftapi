@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { SentryModule } from '@sentry/nestjs/setup';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import EmailService from './service/EmailService';
 import LiftController from './controllers/Lift.Controller';
@@ -18,7 +19,7 @@ import LiftService from './service/LiftService';
 import LiftOptionService from './service/LiftOptionService';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(AppDataSource)],
+  imports: [TypeOrmModule.forRoot(AppDataSource), SentryModule.forRoot()],
   controllers: [HealthCheck, AuthController, PaymentController, WebhookController, LiftController, LiftOptionController],
   providers: [EmailService, JwtStrategy, UserService, PaymentService, StripeService, LiftService, LiftOptionService],
   exports: [JwtStrategy],
