@@ -1,9 +1,8 @@
+import './polyfills/slowBuffer';
 import './middleware/Instrument';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import "reflect-metadata";
-import * as fs from 'fs'
-import * as path from 'path'
 import { raw } from 'express';
 
 async function bootstrap() {

@@ -27,11 +27,24 @@ export default class PaymentController {
     @Get('status')
     async handleStatus(@Query('sub') sub: string) {
         try {
-            const status = await this.userService.verifyPaymentStatus(sub);
-            return { status };
+            const paymentStatus = await this.userService.verifyPaymentStatus(sub);
+            if (!paymentStatus) {
+                return { status: null, cancelAtPeriodEnd: false, currentPeriodEnd: null };
+            }
+            return paymentStatus;
         } catch (Error: any) {
             Sentry.captureException(Error, { user: { sub: sub } });
             return new BadRequestException("could not verify payment status");
+        }
+    }
+
+    @Post('cancel')
+    async cancelSubscription(@Body() request: { userId: string; cancelReason?: string }) {
+        try {
+            return await this.paymentService.cancelSubscription(request.userId, request.cancelReason);
+        } catch (error: any) {
+            Sentry.captureException(error, { user: { sub: request.userId } });
+            return new BadRequestException(`error canceling subscription : ${request.userId}`)
         }
     }
 }

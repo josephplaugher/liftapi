@@ -31,7 +31,10 @@ export default class User {
     StripeCancelAtPeriodEnd: boolean;
 
     @Column({ type: "timestamp", nullable: true })
-    StripeTrialEnd: Date | null
+    StripeTrialEnd: Date | null;
+
+    @Column({ type: "text", nullable: true })
+    CancelReason: string | null;
 }
 
 export class UserDto {

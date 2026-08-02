@@ -44,6 +44,10 @@ export default class UserService {
         if (!user) {
             return null;
         }
-        return user.StripeSubscriptionStatus;
+        return {
+            status: user.StripeSubscriptionStatus,
+            cancelAtPeriodEnd: user.StripeCancelAtPeriodEnd ?? false,
+            currentPeriodEnd: user.StripeCurrentPeriodEnd,
+        };
     }
 }

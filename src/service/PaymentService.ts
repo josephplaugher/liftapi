@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import User from "src/models/User";
 import { StripeService } from "./StripeService";
 import { InjectDataSource } from "@nestjs/typeorm/dist/common";
@@ -26,5 +26,36 @@ export default class PaymentService {
         await this.appDataSource.manager.save(user);
 
         return { sessionId: session.id, url: session.url };
+    }
+
+    async cancelSubscription(userId: string, cancelReason?: string) {
+        const user = await this.appDataSource.manager.findOne<User>(User, {
+            where: { Sub: userId }
+        });
+        if (!user) {
+            throw new Error(`can't find user by Sub ${userId} to cancel subscription`);
+        }
+        if (!user.StripeSubscriptionId) {
+            throw new Error(`user ${userId} has no active Stripe subscription to cancel`);
+        }
+
+        const subscription = await this.stripeService.cancelSubscriptionAtPeriodEnd(
+            user.StripeSubscriptionId
+        );
+
+        const currentPeriodEndUnix = this.stripeService.getCurrentPeriodEnd(subscription);
+        user.StripeSubscriptionStatus = subscription.status;
+        user.StripeCancelAtPeriodEnd = subscription.cancel_at_period_end;
+        user.StripeCurrentPeriodEnd = currentPeriodEndUnix
+            ? new Date(currentPeriodEndUnix * 1000)
+            : null;
+        user.CancelReason = cancelReason?.trim() || null;
+        await this.appDataSource.manager.save(user);
+
+        return {
+            status: user.StripeSubscriptionStatus,
+            cancelAtPeriodEnd: user.StripeCancelAtPeriodEnd,
+            currentPeriodEnd: user.StripeCurrentPeriodEnd,
+        };
     }
 }

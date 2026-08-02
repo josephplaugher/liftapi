@@ -41,6 +41,30 @@ export class StripeService {
         });
     }
 
+    async cancelSubscriptionAtPeriodEnd(subscriptionId: string) {
+        return this.stripe.subscriptions.update(subscriptionId, {
+            cancel_at_period_end: true,
+        });
+    }
+
+    getCurrentPeriodEnd(subscription: Stripe.Subscription): number | null {
+        const subscriptionPeriodEnd = (subscription as Stripe.Subscription & {
+            current_period_end?: number | null;
+        }).current_period_end;
+
+        if (typeof subscriptionPeriodEnd === 'number') {
+            return subscriptionPeriodEnd;
+        }
+
+        const itemPeriodEnd = subscription.items.data[0] as
+            | (Stripe.SubscriptionItem & { current_period_end?: number | null })
+            | undefined;
+
+        return typeof itemPeriodEnd?.current_period_end === 'number'
+            ? itemPeriodEnd.current_period_end
+            : null;
+    }
+
     async handleWebhook(signature: string, @Req() request: RawBodyRequest<Request>) {
         const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
         let event: Stripe.Event;
@@ -75,6 +99,21 @@ export class StripeService {
         return { received: true };
     }
 
+    private applySubscriptionFields(user: User, subscription: Stripe.Subscription) {
+        const currentPeriodEnd = this.getCurrentPeriodEnd(subscription);
+
+        user.StripeSubscriptionId = subscription.id;
+        user.StripePriceId = subscription.items.data[0]?.price.id ?? user.StripePriceId;
+        user.StripeSubscriptionStatus = subscription.status;
+        user.StripeCancelAtPeriodEnd = subscription.cancel_at_period_end;
+        user.StripeCurrentPeriodEnd = currentPeriodEnd
+            ? new Date(currentPeriodEnd * 1000)
+            : null;
+        user.StripeTrialEnd = subscription.trial_end
+            ? new Date(subscription.trial_end * 1000)
+            : null;
+    }
+
     private async handleCheckoutComplete(session: Stripe.Checkout.Session) {
         const user = await this.appDataSource.manager.findOne<User>(User, {
             where: { Sub: session.client_reference_id?.toString() }
@@ -87,12 +126,8 @@ export class StripeService {
         );
 
         user.StripeCustomerId = session.customer as string;
-        user.StripeSubscriptionId = session.subscription as string;
         user.StripePaymentStatus = session.payment_status as string;
-        user.StripePriceId = subscription.items.data[0].price.id;
-        user.StripeTrialEnd = subscription.trial_end ? new Date(subscription.trial_end * 1000) : null;
-        user.StripeSubscriptionStatus = subscription.status;
-        user.StripeCancelAtPeriodEnd = subscription.cancel_at_period_end;
+        this.applySubscriptionFields(user, subscription);
         await this.appDataSource.manager.save(user);
     }
 
@@ -102,9 +137,7 @@ export class StripeService {
         });
         if (!user) throw new Error("cannot find user to update price");
 
-        user.StripeSubscriptionId = subscription.id as string;
-        user.StripePriceId = subscription.items.data[0].price.id.toString();
-        user.StripeTrialEnd = subscription.trial_end ? new Date(subscription.trial_end) : null;
+        this.applySubscriptionFields(user, subscription);
         await this.appDataSource.manager.save(user);
     }
 
@@ -117,6 +150,8 @@ export class StripeService {
 
         user.StripeSubscriptionId = "";
         user.StripePriceId = "";
+        user.StripeSubscriptionStatus = "canceled";
+        user.StripeCancelAtPeriodEnd = false;
         user.StripeTrialEnd = null;
         user.StripeCurrentPeriodEnd = null;
         await this.appDataSource.manager.save(user);

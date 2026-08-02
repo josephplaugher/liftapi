@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../lift"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"js/ts.tsdk.path": "liftapi/node_modules/typescript/lib"
+	}
+}
