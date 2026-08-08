@@ -1,7 +1,5 @@
-import { BadRequestException, Injectable, Req } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm/dist/common";
-import { error } from "console";
-import { Auth0JwtPayload } from "src/models/JwtAuthPayload";
 import LiftOption from "src/models/LiftOption";
 import User from "src/models/User";
 import { DataSource } from "typeorm";
@@ -25,6 +23,45 @@ export default class UserService {
             await this.appDataSource.manager.save(liftOptions);
         }
         return "ok";
+    }
+
+    async getMe(sub: string, emailVerifiedFromToken: boolean) {
+        await this.getOrCreateUser(sub);
+        const user = await this.appDataSource.manager.findOne<User>(User, {
+            where: { Sub: sub }
+        });
+        if (!user) {
+            throw new BadRequestException(`can't find user by Sub ${sub}`);
+        }
+        const fullName = user.FullName?.trim() || null;
+        return {
+            fullName,
+            profileComplete: !!fullName,
+            emailVerified: emailVerifiedFromToken,
+        };
+    }
+
+    async updateProfile(sub: string, fullName: string) {
+        const trimmed = fullName?.trim();
+        if (!trimmed) {
+            throw new BadRequestException("fullName is required");
+        }
+
+        await this.getOrCreateUser(sub);
+        const user = await this.appDataSource.manager.findOne<User>(User, {
+            where: { Sub: sub }
+        });
+        if (!user) {
+            throw new BadRequestException(`can't find user by Sub ${sub}`);
+        }
+
+        user.FullName = trimmed;
+        await this.appDataSource.manager.save(user);
+
+        return {
+            fullName: user.FullName,
+            profileComplete: true,
+        };
     }
 
     async GetId(sub: string) {

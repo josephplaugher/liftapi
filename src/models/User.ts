@@ -9,6 +9,9 @@ export default class User {
     @Column({ unique: true, nullable: false })
     Sub: string;
 
+    @Column({ type: "text", nullable: true })
+    FullName: string | null;
+
     @Column({ unique: true, nullable: true })
     StripeCustomerId: string;
 

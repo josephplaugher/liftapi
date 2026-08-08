@@ -5,9 +5,11 @@ import EmailService from './service/EmailService';
 import LiftController from './controllers/Lift.Controller';
 import LiftOptionController from './controllers/LiftOption.Controller';
 import AuthController from './controllers/Auth.Controller';
+import UserController from './controllers/User.Controller';
 import { AuthMiddleware } from './middleware/Auth';
 import { JwtStrategy } from './middleware/JwtStrategy';
 import UserService from './service/UserService';
+import Auth0ManagementService from './service/Auth0ManagementService';
 import PaymentController from './controllers/Payment.Controller';
 import { StripeService } from './service/StripeService';
 import HealthCheck from './controllers/HealthCheck.Controller';
@@ -20,8 +22,8 @@ import LiftOptionService from './service/LiftOptionService';
 
 @Module({
   imports: [TypeOrmModule.forRoot(AppDataSource), SentryModule.forRoot()],
-  controllers: [HealthCheck, AuthController, PaymentController, WebhookController, LiftController, LiftOptionController],
-  providers: [EmailService, JwtStrategy, UserService, PaymentService, StripeService, LiftService, LiftOptionService],
+  controllers: [HealthCheck, AuthController, UserController, PaymentController, WebhookController, LiftController, LiftOptionController],
+  providers: [EmailService, JwtStrategy, UserService, Auth0ManagementService, PaymentService, StripeService, LiftService, LiftOptionService],
   exports: [JwtStrategy],
 })
 export class AppModule implements NestModule  { 
