@@ -46,11 +46,11 @@ export default class LiftController {
     @Post()
     async Post(@Body() lift: Lift, @Req() req: { user: Auth0JwtPayload }) {
         try {
-            await this.liftService.AddSet(lift, req.user.sub);
-            return "ok";
+            return await this.liftService.AddSet(lift, req.user.sub);
         } catch (error: any) {
             console.log(error);
-            return new BadRequestException(`could not add that set ${lift}`)
+            // Thrown, not returned, so the client sees a real 400 instead of a 201 with an error body.
+            throw error instanceof BadRequestException ? error : new BadRequestException(`could not add that set ${lift}`);
         }
     }
 

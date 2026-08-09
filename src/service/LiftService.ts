@@ -4,12 +4,18 @@ import { StripeService } from "./StripeService";
 import { InjectDataSource } from "@nestjs/typeorm/dist/common";
 import { Between, DataSource } from "typeorm";
 import UserService from "./UserService";
+import PrService from "./PrService";
 import Lift, { LiftGraphable } from "src/models/Lift";
 import { groupBy } from "rxjs";
+import * as Sentry from "@sentry/nestjs";
 
 @Injectable()
 export default class LiftService {
-    constructor(@InjectDataSource() private readonly appDataSource: DataSource, private readonly userService: UserService) { }
+    constructor(
+        @InjectDataSource() private readonly appDataSource: DataSource,
+        private readonly userService: UserService,
+        private readonly prService: PrService,
+    ) { }
 
     async getLifts(sub: string) {
         const id = await this.userService.GetId(sub);
@@ -65,6 +71,9 @@ export default class LiftService {
         if (!lift) {
             throw new Error("empty request body");
         }
+        if (!lift.Name?.trim()) {
+            throw new BadRequestException("A lift name is required to record a set");
+        }
         const id = await this.userService.GetId(sub);
         if (!id) throw new Error("User not found");
 
@@ -73,6 +82,14 @@ export default class LiftService {
 
         const newLift = this.appDataSource.manager.create(Lift, lift);
         await this.appDataSource.manager.save(newLift);
+
+        // The set is already saved, so a failed record check must not fail the request.
+        try {
+            return await this.prService.checkForNewPr(id, newLift);
+        } catch (error: any) {
+            Sentry.captureException(error);
+            return { newPr: false };
+        }
     }
 
     async UpdateSet(lift: Lift, sub: string) {

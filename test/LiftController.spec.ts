@@ -66,7 +66,7 @@ describe('LiftController (e2e)', () => {
                 .set('Authorization', `Bearer ${jwtToken}`)
                 .send(testLift);
             expect(res.status).toBe(201);
-            expect(res.text).toBe('ok');
+            expect(res.body).toHaveProperty('newPr');
 
             // Get lifts, fetch the created one
             const getRes = await request(app.getHttpServer())

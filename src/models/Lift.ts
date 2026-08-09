@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, Check } from "typeorm";
 import { UUID } from "typeorm/driver/mongodb/bson.typings";
 
 @Entity()
+@Check("CHK_lift_name_not_blank", `"Name" <> ''`)
 export default class Lift {
     @PrimaryGeneratedColumn("uuid")
     Id: string;
