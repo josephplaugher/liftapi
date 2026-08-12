@@ -20,10 +20,11 @@ import AppDataSource from './data/AppDataSource';
 import LiftService from './service/LiftService';
 import LiftOptionService from './service/LiftOptionService';
 import PrService from './service/PrService';
+import PrController from './controllers/Pr.Controller';
 
 @Module({
   imports: [TypeOrmModule.forRoot(AppDataSource), SentryModule.forRoot()],
-  controllers: [HealthCheck, AuthController, UserController, PaymentController, WebhookController, LiftController, LiftOptionController],
+  controllers: [HealthCheck, AuthController, UserController, PaymentController, WebhookController, LiftController, LiftOptionController, PrController],
   providers: [EmailService, JwtStrategy, UserService, Auth0ManagementService, PaymentService, StripeService, LiftService, LiftOptionService, PrService],
   exports: [JwtStrategy],
 })

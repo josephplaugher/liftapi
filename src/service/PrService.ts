@@ -3,6 +3,7 @@ import { InjectDataSource } from "@nestjs/typeorm/dist/common";
 import { DataSource } from "typeorm";
 import Lift from "src/models/Lift";
 import Pr from "src/models/Pr";
+import UserService from "./UserService";
 
 export type PrCheckResult = {
     newPr: boolean;
@@ -10,9 +11,39 @@ export type PrCheckResult = {
     liftName?: string;
 };
 
+export type PrLookupResult = {
+    liftName: string;
+    weight: number;
+} | null;
+
 @Injectable()
 export default class PrService {
-    constructor(@InjectDataSource() private readonly appDataSource: DataSource) { }
+    constructor(
+        @InjectDataSource() private readonly appDataSource: DataSource,
+        private readonly userService: UserService,
+    ) { }
+
+    async getByLiftName(sub: string, liftName: string): Promise<PrLookupResult> {
+        const name = liftName.replace(/_/g, " ").trim();
+        if (!name) return null;
+
+        const userId = await this.userService.GetId(sub);
+        if (!userId) throw new Error("User not found");
+
+        const existingPr = await this.appDataSource.manager.findOne(Pr, {
+            where: { UserId: userId, LiftName: name },
+        });
+        if (existingPr) {
+            return { liftName: existingPr.LiftName, weight: existingPr.Pr };
+        }
+
+        // Seed from history so Progress can show a record before the next set save.
+        const best = await this.getBestLoggedWeight(userId, name);
+        if (best === null) return null;
+
+        await this.storePr(userId, name, best);
+        return { liftName: name, weight: best };
+    }
 
     async checkForNewPr(userId: string, lift: Lift): Promise<PrCheckResult> {
         const weight = Number(lift.Weight);
